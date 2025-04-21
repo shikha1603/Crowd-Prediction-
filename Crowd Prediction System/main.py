@@ -91,3 +91,31 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+
+
+
+# --- Interface to Predict Crowd Density ---
+def predict_crowd_density(hour, day_of_week, rating, user_ratings_total, weights):
+    input_data = np.array([[hour, day_of_week, rating, user_ratings_total]], dtype=float)
+    input_data = (input_data - X.mean(axis=0)) / (X.std(axis=0) + 1e-8)
+    prediction = forward_pass(input_data, weights)
+    return prediction[0][0]
+
+print("\n--- Crowd Density Checker ---")
+while True:
+    try:
+        hour = float(input("Enter hour (0–23): "))
+        day_of_week = float(input("Enter day of week (0=Sun, ..., 6=Sat): "))
+        rating = float(input("Enter Google rating (e.g. 4.5): "))
+        user_ratings_total = float(input("Enter total user ratings (e.g. 1200): "))
+
+        predicted_popularity = predict_crowd_density(hour, day_of_week, rating, user_ratings_total, best_weights)
+        print(f"\n🔮 Predicted Crowd Density: {predicted_popularity:.2f}\n")
+        
+        cont = input("Try again? (y/n): ")
+        if cont.lower() != 'y':
+            break
+    except Exception as e:
+        print(f"⚠️ Error: {e}")
+        break
